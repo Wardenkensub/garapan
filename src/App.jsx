@@ -12,31 +12,46 @@ export default function App() {
   const [editIndex, setEditIndex] = useState(null);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    if (stored.user) {
-      setUser(stored.user);
-      setTasks(stored.tasks || []);
+useEffect(() => {
+  // cek semua localStorage
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith("user_data_")) {
+      const data = JSON.parse(localStorage.getItem(key));
+      if (data && data.user) {
+        setUser(data.user);
+        setTasks(data.tasks || []);
+        break;
+      }
     }
-  }, []);
+  }
+}, []);
+
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, tasks }));
-    }
-  }, [tasks, user]);
+  if (user?.email) {
+    const key = getStorageKey(user.email);
+    localStorage.setItem(key, JSON.stringify({ user, tasks }));
+  }
+}, [tasks, user]);
 
-  const handleLogin = () => {
-    if (email && password) {
-      setUser({ email });
-    }
-  };
 
-  const handleRegister = () => {
-    if (email && password) {
-      setUser({ email });
-    }
-  };
+const handleLogin = () => {
+  if (email && password) {
+    const stored = JSON.parse(localStorage.getItem(getStorageKey(email)) || "{}");
+    setUser({ email });
+    setTasks(stored.tasks || []);
+  }
+};
+
+
+const handleRegister = () => {
+  if (email && password) {
+    setUser({ email });
+    setTasks([]);
+  }
+};
+
 
   const handleAddOrUpdateTask = () => {
     if (newTask.nama && newTask.akun && newTask.task && newTask.link) {
@@ -104,7 +119,15 @@ if (!user) {
     <div style={styles.wrapper}>
       <div style={styles.header}>
         <h1 style={{ fontSize: 24 }}>Dashboard</h1>
-        <button onClick={() => { setUser(null); setTasks([]); localStorage.removeItem(STORAGE_KEY); }} style={styles.button}>Logout</button>
+        <button
+  onClick={() => {
+    setUser(null);
+  }}
+  style={styles.button}
+>
+  Logout
+</button>
+
       </div>
 
       <div style={styles.form}>
