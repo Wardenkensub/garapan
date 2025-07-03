@@ -146,21 +146,25 @@ export default function App() {
               <th style={styles.thtd}>Aksi</th>
             </tr>
           </thead>
-          <tbody>
-            {filteredTasks.map((t, i) => (
-              <tr key={i}>
-                <td style={styles.thtd}>{t.nama}</td>
-                <td style={styles.thtd}>{t.akun}</td>
-                <td style={styles.thtd}>{t.task}</td>
-                <td style={styles.thtd}><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
-                <td style={styles.thtd}><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
-                <td style={styles.thtd}>
-                  <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
-                  <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+        <tbody>
+  {filteredTasks.map((t, i) => (
+    <tr key={i}>
+      <td data-label="Nama">{t.nama}</td>
+      <td data-label="Akun">{t.akun}</td>
+      <td data-label="Task">{t.task}</td>
+      <td data-label="Link">
+        <a href={t.link} target="_blank" rel="noreferrer">Link</a>
+      </td>
+      <td data-label="Sudah">
+        <input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} />
+      </td>
+      <td data-label="Aksi">
+        <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
+        <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
+      </td>
+    </tr>
+  ))}
+</tbody>
         </table>
       </div>
     </div>
