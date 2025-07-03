@@ -76,27 +76,29 @@ export default function App() {
     t.link.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (!user) {
-    return (
-      <div style={styles.centered}>
-        <div style={styles.card}>
-          <h2>{view === "login" ? "Login" : "Register"}</h2>
-          <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
-          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
-          <button onClick={view === "login" ? handleLogin : handleRegister} style={styles.button}>
-            {view === "login" ? "Login" : "Register"}
-          </button>
-          <p style={{ marginTop: 10 }}>
-            {view === "login" ? (
-              <>Belum punya akun? <button onClick={() => setView("register")} style={styles.link}>Daftar</button></>
-            ) : (
-              <>Sudah punya akun? <button onClick={() => setView("login")} style={styles.link}>Login</button></>
-            )}
-          </p>
-        </div>
+// ... tetap sama sampai return user === null ...
+// Ganti bagian return login:
+if (!user) {
+  return (
+    <div style={{ ...styles.centered, padding: 20 }}>
+      <div style={styles.loginCard}>
+        <h2 style={{ marginBottom: 15 }}>{view === "login" ? "Login" : "Register"}</h2>
+        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
+        <button onClick={view === "login" ? handleLogin : handleRegister} style={styles.button}>
+          {view === "login" ? "Login" : "Register"}
+        </button>
+        <p style={{ marginTop: 10 }}>
+          {view === "login" ? (
+            <>Belum punya akun? <button onClick={() => setView("register")} style={styles.link}>Daftar</button></>
+          ) : (
+            <>Sudah punya akun? <button onClick={() => setView("login")} style={styles.link}>Login</button></>
+          )}
+        </p>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div style={styles.wrapper}>
