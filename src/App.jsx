@@ -1,11 +1,4 @@
-const Input = (props) => <input {...props} className="border p-2 rounded w-full" />;
-const Button = ({ children, ...props }) => <button {...props} className="bg-blue-600 text-white px-4 py-2 rounded">{children}</button>;
-const Checkbox = ({ checked, onCheckedChange }) => (
-  <input type="checkbox" checked={checked} onChange={(e) => onCheckedChange(e.target.checked)} />
-);
-const Card = ({ children }) => <div className="bg-white shadow rounded p-4">{children}</div>;
-const CardContent = ({ children }) => <div>{children}</div>;
-
+import React, { useState, useEffect } from "react";
 
 const STORAGE_KEY = "user_data";
 
@@ -85,86 +78,134 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="space-y-4">
-            <h2 className="text-xl font-bold text-center pt-4">{view === "login" ? "Login" : "Register"}</h2>
-            <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <Button onClick={view === "login" ? handleLogin : handleRegister} className="w-full">
-              {view === "login" ? "Login" : "Register"}
-            </Button>
-            <p className="text-sm text-center">
-              {view === "login" ? (
-                <span>
-                  Belum punya akun? <button className="text-blue-500" onClick={() => setView("register")}>Daftar</button>
-                </span>
-              ) : (
-                <span>
-                  Sudah punya akun? <button className="text-blue-500" onClick={() => setView("login")}>Login</button>
-                </span>
-              )}
-            </p>
-          </CardContent>
-        </Card>
+      <div style={styles.centered}>
+        <div style={styles.card}>
+          <h2>{view === "login" ? "Login" : "Register"}</h2>
+          <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
+          <button onClick={view === "login" ? handleLogin : handleRegister} style={styles.button}>
+            {view === "login" ? "Login" : "Register"}
+          </button>
+          <p style={{ marginTop: 10 }}>
+            {view === "login" ? (
+              <>Belum punya akun? <button onClick={() => setView("register")} style={styles.link}>Daftar</button></>
+            ) : (
+              <>Sudah punya akun? <button onClick={() => setView("login")} style={styles.link}>Login</button></>
+            )}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button variant="outline" onClick={() => { setUser(null); setTasks([]); localStorage.removeItem(STORAGE_KEY); }}>Logout</Button>
+    <div style={{ padding: 20, fontFamily: "sans-serif" }}>
+      <div style={styles.header}>
+        <h1>Dashboard</h1>
+        <button onClick={() => { setUser(null); setTasks([]); localStorage.removeItem(STORAGE_KEY); }} style={styles.button}>Logout</button>
       </div>
 
-      <div className="space-y-2 mb-4">
-        <Input placeholder="Nama Garapan" value={newTask.nama} onChange={(e) => setNewTask({ ...newTask, nama: e.target.value })} />
-        <Input placeholder="Banyak Akun" value={newTask.akun} onChange={(e) => setNewTask({ ...newTask, akun: e.target.value })} />
-        <Input placeholder="Task" value={newTask.task} onChange={(e) => setNewTask({ ...newTask, task: e.target.value })} />
-        <Input placeholder="Link" value={newTask.link} onChange={(e) => setNewTask({ ...newTask, link: e.target.value })} />
-        <Button onClick={handleAddOrUpdateTask}>{editIndex !== null ? "Update Garapan" : "Tambah Garapan"}</Button>
+      <div style={styles.form}>
+        <input placeholder="Nama Garapan" value={newTask.nama} onChange={(e) => setNewTask({ ...newTask, nama: e.target.value })} style={styles.input} />
+        <input placeholder="Banyak Akun" value={newTask.akun} onChange={(e) => setNewTask({ ...newTask, akun: e.target.value })} style={styles.input} />
+        <input placeholder="Task" value={newTask.task} onChange={(e) => setNewTask({ ...newTask, task: e.target.value })} style={styles.input} />
+        <input placeholder="Link" value={newTask.link} onChange={(e) => setNewTask({ ...newTask, link: e.target.value })} style={styles.input} />
+        <button onClick={handleAddOrUpdateTask} style={styles.button}>
+          {editIndex !== null ? "Update Garapan" : "Tambah Garapan"}
+        </button>
       </div>
 
-      <div className="mb-4">
-        <Input placeholder="Cari garapan..." value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      <input placeholder="Cari garapan..." value={search} onChange={(e) => setSearch(e.target.value)} style={styles.input} />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border px-4 py-2">Nama Garapan</th>
-              <th className="border px-4 py-2">Banyak Akun</th>
-              <th className="border px-4 py-2">Task</th>
-              <th className="border px-4 py-2">Link</th>
-              <th className="border px-4 py-2">Sudah/Belum</th>
-              <th className="border px-4 py-2">Aksi</th>
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Akun</th>
+            <th>Task</th>
+            <th>Link</th>
+            <th>Sudah</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredTasks.map((t, i) => (
+            <tr key={i}>
+              <td>{t.nama}</td>
+              <td>{t.akun}</td>
+              <td>{t.task}</td>
+              <td><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
+              <td><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
+              <td>
+                <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
+                <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {filteredTasks.map((t, i) => (
-              <tr key={i}>
-                <td className="border px-4 py-2">{t.nama}</td>
-                <td className="border px-4 py-2">{t.akun}</td>
-                <td className="border px-4 py-2">{t.task}</td>
-                <td className="border px-4 py-2">
-                  <a href={t.link} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
-                    Link
-                  </a>
-                </td>
-                <td className="border px-4 py-2 text-center">
-                  <Checkbox checked={t.sudah} onCheckedChange={() => toggleCheckbox(tasks.indexOf(t))} />
-                </td>
-                <td className="border px-4 py-2 space-x-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(tasks.indexOf(t))}>Edit</Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete(tasks.indexOf(t))}>Hapus</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
+
+const styles = {
+  centered: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f5f5f5"
+  },
+  card: {
+    background: "white",
+    padding: 20,
+    borderRadius: 8,
+    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+    width: 300,
+    textAlign: "center"
+  },
+  input: {
+    padding: 10,
+    marginBottom: 10,
+    width: "100%",
+    borderRadius: 4,
+    border: "1px solid #ccc"
+  },
+  button: {
+    padding: "10px 20px",
+    background: "#4CAF50",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer"
+  },
+  link: {
+    background: "none",
+    border: "none",
+    color: "#2196F3",
+    cursor: "pointer",
+    textDecoration: "underline"
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20
+  },
+  form: {
+    marginBottom: 20
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse"
+  },
+  smallButton: {
+    padding: "5px 10px",
+    marginRight: 5,
+    background: "#2196F3",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer"
+  }
+};
