@@ -99,9 +99,9 @@ export default function App() {
   }
 
   return (
-    <div style={{ padding: 20, fontFamily: "sans-serif" }}>
+    <div style={styles.wrapper}>
       <div style={styles.header}>
-        <h1>Dashboard</h1>
+        <h1 style={{ fontSize: 24 }}>Dashboard</h1>
         <button onClick={() => { setUser(null); setTasks([]); localStorage.removeItem(STORAGE_KEY); }} style={styles.button}>Logout</button>
       </div>
 
@@ -117,38 +117,46 @@ export default function App() {
 
       <input placeholder="Cari garapan..." value={search} onChange={(e) => setSearch(e.target.value)} style={styles.input} />
 
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th>Nama</th>
-            <th>Akun</th>
-            <th>Task</th>
-            <th>Link</th>
-            <th>Sudah</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTasks.map((t, i) => (
-            <tr key={i}>
-              <td>{t.nama}</td>
-              <td>{t.akun}</td>
-              <td>{t.task}</td>
-              <td><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
-              <td><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
-              <td>
-                <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
-                <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
-              </td>
+      <div style={{ overflowX: "auto" }}>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Akun</th>
+              <th>Task</th>
+              <th>Link</th>
+              <th>Sudah</th>
+              <th>Aksi</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredTasks.map((t, i) => (
+              <tr key={i}>
+                <td>{t.nama}</td>
+                <td>{t.akun}</td>
+                <td>{t.task}</td>
+                <td><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
+                <td><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
+                <td>
+                  <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
+                  <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
 const styles = {
+  wrapper: {
+    padding: 20,
+    fontFamily: "Arial, sans-serif",
+    maxWidth: 800,
+    margin: "0 auto",
+  },
   centered: {
     minHeight: "100vh",
     display: "flex",
@@ -161,7 +169,8 @@ const styles = {
     padding: 20,
     borderRadius: 8,
     boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-    width: 300,
+    width: "90%",
+    maxWidth: 320,
     textAlign: "center"
   },
   input: {
@@ -169,7 +178,8 @@ const styles = {
     marginBottom: 10,
     width: "100%",
     borderRadius: 4,
-    border: "1px solid #ccc"
+    border: "1px solid #ccc",
+    boxSizing: "border-box"
   },
   button: {
     padding: "10px 20px",
@@ -177,7 +187,9 @@ const styles = {
     color: "white",
     border: "none",
     borderRadius: 4,
-    cursor: "pointer"
+    cursor: "pointer",
+    width: "100%",
+    marginBottom: 10
   },
   link: {
     background: "none",
@@ -190,14 +202,18 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20
+    marginBottom: 20,
+    flexWrap: "wrap",
+    gap: 10
   },
   form: {
     marginBottom: 20
   },
   table: {
     width: "100%",
-    borderCollapse: "collapse"
+    borderCollapse: "collapse",
+    marginTop: 10,
+    fontSize: 14
   },
   smallButton: {
     padding: "5px 10px",
@@ -207,5 +223,9 @@ const styles = {
     border: "none",
     borderRadius: 4,
     cursor: "pointer"
+  },
+  thtd: {
+    border: "1px solid #ddd",
+    padding: "8px"
   }
 };
