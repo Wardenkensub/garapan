@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+const Input = (props) => <input {...props} className="border p-2 rounded w-full" />;
+const Button = ({ children, ...props }) => <button {...props} className="bg-blue-600 text-white px-4 py-2 rounded">{children}</button>;
+const Checkbox = ({ checked, onCheckedChange }) => (
+  <input type="checkbox" checked={checked} onChange={(e) => onCheckedChange(e.target.checked)} />
+);
+const Card = ({ children }) => <div className="bg-white shadow rounded p-4">{children}</div>;
+const CardContent = ({ children }) => <div>{children}</div>;
+
 
 const STORAGE_KEY = "user_data";
 
