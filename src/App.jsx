@@ -121,31 +121,32 @@ if (!user) {
 
       <div style={{ overflowX: "auto" }}>
         <table style={styles.table}>
-          <thead>
-            <tr>
-              <th>Nama</th>
-              <th>Akun</th>
-              <th>Task</th>
-              <th>Link</th>
-              <th>Sudah</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTasks.map((t, i) => (
-              <tr key={i}>
-                <td>{t.nama}</td>
-                <td>{t.akun}</td>
-                <td>{t.task}</td>
-                <td><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
-                <td><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
-                <td>
-                  <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
-                  <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+<thead>
+  <tr>
+    <th style={styles.thtd}>Nama</th>
+    <th style={styles.thtd}>Akun</th>
+    <th style={styles.thtd}>Task</th>
+    <th style={styles.thtd}>Link</th>
+    <th style={styles.thtd}>Sudah</th>
+    <th style={styles.thtd}>Aksi</th>
+  </tr>
+</thead>
+<tbody>
+  {filteredTasks.map((t, i) => (
+    <tr key={i}>
+      <td style={styles.thtd}>{t.nama}</td>
+      <td style={styles.thtd}>{t.akun}</td>
+      <td style={styles.thtd}>{t.task}</td>
+      <td style={styles.thtd}><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
+      <td style={styles.thtd}><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
+      <td style={styles.thtd}>
+        <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
+        <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
     </div>
@@ -157,7 +158,7 @@ const styles = {
     padding: 20,
     fontFamily: "Arial, sans-serif",
     maxWidth: 800,
-    margin: "0 auto",
+    margin: "0 auto"
   },
   centered: {
     minHeight: "100vh",
@@ -166,14 +167,13 @@ const styles = {
     alignItems: "center",
     background: "#f5f5f5"
   },
-  card: {
-    background: "white",
+  loginCard: {
+    background: "#fff",
     padding: 20,
     borderRadius: 8,
     boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-    width: "90%",
-    maxWidth: 320,
-    textAlign: "center"
+    width: "100%",
+    maxWidth: 320
   },
   input: {
     padding: 10,
@@ -214,8 +214,7 @@ const styles = {
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    marginTop: 10,
-    fontSize: 14
+    marginTop: 10
   },
   smallButton: {
     padding: "5px 10px",
@@ -227,7 +226,7 @@ const styles = {
     cursor: "pointer"
   },
   thtd: {
-    border: "1px solid #ddd",
+    border: "1px solid #ccc",
     padding: "8px"
   }
 };
