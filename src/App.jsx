@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const STORAGE_KEY = "user_data";
+const getStorageKey = (email) => "user_data_" + email;
 
 export default function App() {
   const [view, setView] = useState("login");
@@ -12,46 +12,41 @@ export default function App() {
   const [editIndex, setEditIndex] = useState(null);
   const [search, setSearch] = useState("");
 
-useEffect(() => {
-  // cek semua localStorage
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith("user_data_")) {
-      const data = JSON.parse(localStorage.getItem(key));
-      if (data && data.user) {
-        setUser(data.user);
-        setTasks(data.tasks || []);
-        break;
+  useEffect(() => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith("user_data_")) {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (data && data.user) {
+          setUser(data.user);
+          setTasks(data.tasks || []);
+          break;
+        }
       }
     }
-  }
-}, []);
-
+  }, []);
 
   useEffect(() => {
-  if (user?.email) {
-    const key = getStorageKey(user.email);
-    localStorage.setItem(key, JSON.stringify({ user, tasks }));
-  }
-}, [tasks, user]);
+    if (user?.email) {
+      const key = getStorageKey(user.email);
+      localStorage.setItem(key, JSON.stringify({ user, tasks }));
+    }
+  }, [tasks, user]);
 
+  const handleLogin = () => {
+    if (email && password) {
+      const stored = JSON.parse(localStorage.getItem(getStorageKey(email)) || "{}");
+      setUser({ email });
+      setTasks(stored.tasks || []);
+    }
+  };
 
-const handleLogin = () => {
-  if (email && password) {
-    const stored = JSON.parse(localStorage.getItem(getStorageKey(email)) || "{}");
-    setUser({ email });
-    setTasks(stored.tasks || []);
-  }
-};
-
-
-const handleRegister = () => {
-  if (email && password) {
-    setUser({ email });
-    setTasks([]);
-  }
-};
-
+  const handleRegister = () => {
+    if (email && password) {
+      setUser({ email });
+      setTasks([]);
+    }
+  };
 
   const handleAddOrUpdateTask = () => {
     if (newTask.nama && newTask.akun && newTask.task && newTask.link) {
@@ -91,43 +86,40 @@ const handleRegister = () => {
     t.link.toLowerCase().includes(search.toLowerCase())
   );
 
-// ... tetap sama sampai return user === null ...
-// Ganti bagian return login:
-if (!user) {
-  return (
-    <div style={{ ...styles.centered, padding: 20 }}>
-      <div style={styles.loginCard}>
-        <h2 style={{ marginBottom: 15 }}>{view === "login" ? "Login" : "Register"}</h2>
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
-        <button onClick={view === "login" ? handleLogin : handleRegister} style={styles.button}>
-          {view === "login" ? "Login" : "Register"}
-        </button>
-        <p style={{ marginTop: 10 }}>
-          {view === "login" ? (
-            <>Belum punya akun? <button onClick={() => setView("register")} style={styles.link}>Daftar</button></>
-          ) : (
-            <>Sudah punya akun? <button onClick={() => setView("login")} style={styles.link}>Login</button></>
-          )}
-        </p>
+  if (!user) {
+    return (
+      <div style={{ ...styles.centered, padding: 20 }}>
+        <div style={styles.loginCard}>
+          <h2 style={{ marginBottom: 15 }}>{view === "login" ? "Login" : "Register"}</h2>
+          <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
+          <button onClick={view === "login" ? handleLogin : handleRegister} style={styles.button}>
+            {view === "login" ? "Login" : "Register"}
+          </button>
+          <p style={{ marginTop: 10 }}>
+            {view === "login" ? (
+              <>Belum punya akun? <button onClick={() => setView("register")} style={styles.link}>Daftar</button></>
+            ) : (
+              <>Sudah punya akun? <button onClick={() => setView("login")} style={styles.link}>Login</button></>
+            )}
+          </p>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div style={styles.wrapper}>
       <div style={styles.header}>
         <h1 style={{ fontSize: 24 }}>Dashboard</h1>
         <button
-  onClick={() => {
-    setUser(null);
-  }}
-  style={styles.button}
->
-  Logout
-</button>
-
+          onClick={() => {
+            setUser(null);
+          }}
+          style={styles.button}
+        >
+          Logout
+        </button>
       </div>
 
       <div style={styles.form}>
@@ -144,32 +136,31 @@ if (!user) {
 
       <div style={{ overflowX: "auto" }}>
         <table style={styles.table}>
-<thead>
-  <tr>
-    <th style={styles.thtd}>Nama</th>
-    <th style={styles.thtd}>Akun</th>
-    <th style={styles.thtd}>Task</th>
-    <th style={styles.thtd}>Link</th>
-    <th style={styles.thtd}>Sudah</th>
-    <th style={styles.thtd}>Aksi</th>
-  </tr>
-</thead>
-<tbody>
-  {filteredTasks.map((t, i) => (
-    <tr key={i}>
-      <td style={styles.thtd}>{t.nama}</td>
-      <td style={styles.thtd}>{t.akun}</td>
-      <td style={styles.thtd}>{t.task}</td>
-      <td style={styles.thtd}><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
-      <td style={styles.thtd}><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
-      <td style={styles.thtd}>
-        <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
-        <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
+          <thead>
+            <tr>
+              <th style={styles.thtd}>Nama</th>
+              <th style={styles.thtd}>Akun</th>
+              <th style={styles.thtd}>Task</th>
+              <th style={styles.thtd}>Link</th>
+              <th style={styles.thtd}>Sudah</th>
+              <th style={styles.thtd}>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTasks.map((t, i) => (
+              <tr key={i}>
+                <td style={styles.thtd}>{t.nama}</td>
+                <td style={styles.thtd}>{t.akun}</td>
+                <td style={styles.thtd}>{t.task}</td>
+                <td style={styles.thtd}><a href={t.link} target="_blank" rel="noreferrer">Link</a></td>
+                <td style={styles.thtd}><input type="checkbox" checked={t.sudah} onChange={() => toggleCheckbox(i)} /></td>
+                <td style={styles.thtd}>
+                  <button onClick={() => handleEdit(i)} style={styles.smallButton}>Edit</button>
+                  <button onClick={() => handleDelete(i)} style={{ ...styles.smallButton, background: "#f44336" }}>Hapus</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
@@ -181,14 +172,19 @@ const styles = {
     padding: 20,
     fontFamily: "Arial, sans-serif",
     maxWidth: 800,
-    margin: "0 auto"
+    margin: "0 auto",
+    backgroundColor: "#fafafa",
+    minHeight: "100vh",
+    boxSizing: "border-box"
   },
   centered: {
     minHeight: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#f5f5f5"
+    background: "#f5f5f5",
+    padding: 20,
+    boxSizing: "border-box"
   },
   loginCard: {
     background: "#fff",
@@ -214,7 +210,8 @@ const styles = {
     borderRadius: 4,
     cursor: "pointer",
     width: "100%",
-    marginBottom: 10
+    marginBottom: 10,
+    boxSizing: "border-box"
   },
   link: {
     background: "none",
@@ -237,7 +234,8 @@ const styles = {
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    marginTop: 10
+    marginTop: 10,
+    border: "1px solid #ccc"
   },
   smallButton: {
     padding: "5px 10px",
@@ -250,6 +248,7 @@ const styles = {
   },
   thtd: {
     border: "1px solid #ccc",
-    padding: "8px"
+    padding: "8px",
+    textAlign: "left"
   }
 };
